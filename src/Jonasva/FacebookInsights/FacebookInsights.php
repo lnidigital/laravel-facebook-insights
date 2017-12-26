@@ -43,14 +43,15 @@ class FacebookInsights
      *
      * @param  \Illuminate\Config\Repository  $config
      */
-    public function __construct(Repository $config)
+    public function __construct(array $config)
     {
         $this->config = $config;
-        $this->pageId = $this->config->get('facebook-insights.page-id');
 
-        FacebookSession::setDefaultApplication($this->config->get('facebook-insights.app-id'), $this->config->get('facebook-insights.app-secret'));
+        $this->pageId = $this->config['page-id'];
 
-        $this->session[$this->pageId] = new FacebookSession($this->config->get('facebook-insights.access-token'));
+        FacebookSession::setDefaultApplication($this->config['app-id'], $this->config['app-secret']);
+
+        $this->session[$this->pageId] = new FacebookSession($this->config['access-token']);
     }
 
     /*
@@ -357,7 +358,7 @@ class FacebookInsights
             ))->execute()->getGraphObject();
 
             if ($this->useCache()) {
-                Cache::put($cacheName, $response, $this->config->get('facebook-insights.cache-lifetime'));
+                Cache::put($cacheName, $response, $this->config['cache-lifetime']);
             }
         }
 
@@ -381,7 +382,7 @@ class FacebookInsights
 
         $noQueries = ceil($diff / $this->maxDaysPerQuery);
 
-        if ($noQueries > $this->config->get('facebook-insights.api-call-max')) {
+        if ($noQueries > $this->config['api-call-max']) {
             throw new FacebookSDKException('API calls needed for this query exceed "api-calls-max" set in the config file.');
         }
 
@@ -472,7 +473,7 @@ class FacebookInsights
      */
     private function useCache()
     {
-        return $this->config->get('facebook-insights.cache-lifetime') > 0;
+        return $this->config['cache-lifetime'] > 0;
     }
 
 } 

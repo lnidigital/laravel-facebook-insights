@@ -31,10 +31,14 @@ class FacebookInsightsServiceProvider extends ServiceProvider
 	 */
 	public function register()
 	{
-		$this->app['facebook-insights'] = $this->app->share(function($app)
-		{
-			return new FacebookInsights($app['config']);
-		});
+		$config = config('facebook-insights');
+
+		$this->app->bind(FacebookInsights::class, function () use ($config) {
+            
+            return new FacebookInsights($config);
+        });
+
+        $this->app->alias(FacebookInsights::class, 'facebook-insights');
 	}
 
 	/**
